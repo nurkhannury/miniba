@@ -1,3 +1,5 @@
+// handlers/get_reports.go
+
 package handlers
 
 import (
@@ -19,7 +21,7 @@ func GetReportsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var req GetReportsRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request format", http.StatusBadRequest)
+		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
 
@@ -29,8 +31,8 @@ func GetReportsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"email":   req.Email,
 		"reports": reports,
 	})
 }

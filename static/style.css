@@ -11,7 +11,7 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
-    color: #ffffff; /* optional for better contrast */
+    color: #000000; /* optional for better contrast */
 }
 
 h1 {
@@ -107,11 +107,18 @@ button:hover {
     background: linear-gradient(to right, #005fa3, #003d7a);
 }
 
+#analysis-section > h2 {
+    color: #fff;
+}
+.analysis-title {
+    color: #fff;
+}
+
 h2 {
     text-align: center;
     margin-top: 60px;
     font-size: 24px;
-    color: #003d7a;
+    color: #1c1c1e;
 }
 
 pre {
@@ -448,47 +455,107 @@ pre {
 }
 
 
-/* --- Modal overlay for login --- */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0; right:0; bottom: 0;
-    background: rgba(0,0,0,0.6);
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
+    z-index: 1000;
 }
-
-.modal-content {
-    background: #fff;
-    padding: 24px;
-    border-radius: 12px;
-    max-width: 360px;
+.modal {
+    background: white;
+    padding: 1.5rem;
+    border-radius: .5rem;
     width: 90%;
-    position: relative;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    max-width: 360px;
 }
-
-.modal-close {
-    position: absolute;
-    top: 8px; right: 12px;
-    background: transparent;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.modal-content label {
+.modal label {
     display: block;
-    margin-top: 12px;
+    margin-bottom: 1rem;
+}
+.modal-actions button {
+    margin-left: .5rem;
+}
+
+.modal-text {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    color: #333;
+}
+.modal label {
+    display: block;
+    margin-bottom: 1rem;
+}
+.modal input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    box-sizing: border-box;
+}
+.modal-actions {
+    text-align: right;
+}
+.modal-actions button {
+    margin-left: 0.5rem;
+}
+
+
+.retrieve-section {
+    background: white;
+    padding: 32px 40px;
+    margin: 50px auto;
+    max-width: 850px;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    font-size: 16px;
+    line-height: 1.7;
+    color: #2e2e2e;
+    text-align: left;
+}
+
+/* match the heading style too */
+.retrieve-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #003366;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+}
+
+/* keep your tighter label/input spacing */
+.retrieve-section label {
+    display: block;
+    margin-bottom: 0.5rem;
     font-weight: 600;
 }
-
-.modal-content input {
+.retrieve-section input {
     width: 100%;
-    padding: 8px 10px;
-    margin-top: 6px;
+    padding: 0.75rem;
     border: 1px solid #ccc;
     border-radius: 6px;
-    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
+.retrieve-section button {
+    display: inline-block;
+    margin: 1rem 0;
+}
+
+.report-list {
+    margin-top: 1.5rem;
+    list-style: none;
+    padding-left: 0;
+}
+.report-list li + li {
+    margin-top: .75rem;
+}
+.report-list a {
+    text-decoration: none;
+    color: #0077cc;
+}
+.report-list a:hover {
+    text-decoration: underline;
 }

@@ -3,6 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Mini Business Analyst</title>
+
+    <!-- FAVICON -->
+    <!-- 32×32 PNG -->
+    <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="/assets/favicon-32x32.png"
+    />
+    <!-- fallback .ico -->
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -159,17 +172,69 @@
     </p>
 </div>
 
+<!-- Credentials pop-up -->
+<div id="credModal" class="modal-overlay" style="display:none;">
+    <div class="modal">
+        <h2>🔒 Please log in</h2>
+        <p class="modal-text">
+            We’ll save your login &amp; password so you can retrieve this report at any time.
+        </p>
+
+        <label for="credLogin">
+            Login (email):<br>
+            <input
+                    type="email"
+                    id="credLogin"
+                    placeholder="you@example.com"
+                    required
+            >
+        </label>
+
+        <label for="credPassword">
+            Password:<br>
+            <input
+                    type="password"
+                    id="credPassword"
+                    placeholder="choose a password"
+                    required
+            >
+        </label>
+
+        <div class="modal-actions">
+            <button id="credCancel" type="button">Cancel</button>
+            <button id="credSubmit" type="button">Continue →</button>
+        </div>
+    </div>
+</div>
+
+
 <!--<h2>📊 Raw JSON from GPT:</h2>-->
 <!--<pre id="raw-result"></pre>-->
 
 <div id="analysis-section" style="display: none; opacity: 0; transition: opacity 0.6s ease;">
-    <h2>📊 MiniBA analysis:</h2>
+    <h2 class="analysis-title">📊 MiniBA analysis:</h2>
     <div id="formatted-result"></div>
 
     <div class="analyze-wrapper">
         <button id="downloadPdfBtn" class="analyzeBtn" style="margin-top: 20px;">📄 Download PDF</button>
     </div>
 </div>
+
+<!-- somewhere under your analysis card -->
+<div class="card retrieve-section">
+    <h2>📂 Retrieve Your Past Reports</h2>
+    <label>
+        Email:<br>
+        <input type="email" id="retrieveEmail" placeholder="you@example.com">
+    </label>
+    <label>
+        Password:<br>
+        <input type="password" id="retrievePassword" placeholder="your password">
+    </label>
+    <button id="retrieveBtn">Retrieve Reports</button>
+    <div id="retrieveResults"></div>
+</div>
+
 
 <footer class="mini-footer">
     <p>✨ Built with Go · <a href="https://github.com/your-repo" target="_blank">GitHub</a> · <a href="#">About MiniBA</a></p>
@@ -327,59 +392,80 @@
         });
     });
 
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-
-        if (!validateRequiredFields()) {
-            showGlobalFormError();
-            return;
-        }
-
-        updateProgressBar(totalSteps);
-
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
+    document.addEventListener('DOMContentLoaded', () => {
+        // grab the elements
         const analyzeBtn = document.querySelector('.analyzeBtn');
-        analyzeBtn.disabled = true;
-        analyzeBtn.innerHTML = `<span class="loading-spinner"></span>Analyzing...`;
+        const form       = document.getElementById('bizForm');
+        const credModal  = document.getElementById('credModal');
+        const credLogin  = document.getElementById('credLogin');
+        const credPass   = document.getElementById('credPassword');
+        const credCancel = document.getElementById('credCancel');
+        const credSubmit = document.getElementById('credSubmit');
 
-        try {
-            const res = await fetch('/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+        // intercept Analyze click
+        analyzeBtn.addEventListener('click', e => {
+            e.preventDefault();
+            if (!validateRequiredFields()) {
+                showGlobalFormError();
+                return;
+            }
+            credModal.style.display = 'flex';
+        });
 
-            const json = await res.json();
+        // cancel hides modal
+        credCancel.addEventListener('click', () => {
+            credModal.style.display = 'none';
+        });
 
-            // const rawBlock = document.getElementById('raw-result');
-            // if (rawBlock) rawBlock.textContent = json.response;
+        // Continue →: append credentials and POST
+        credSubmit.addEventListener('click', async () => {
+            if (!credLogin.value.trim() || !credPass.value.trim()) {
+                alert("Please enter both login & password.");
+                return;
+            }
+            credModal.style.display = 'none';
 
-            const cleanResponse = json.response.trim().replace(/^```(?:json)?\s*|```$/g, '');
-            const parsed = JSON.parse(cleanResponse);
-            renderInsightsFromJson(parsed);
+            // gather form + creds
+            const fd = new FormData(form);
+            fd.append('email',    credLogin.value);
+            fd.append('password', credPass.value);
+            const data = Object.fromEntries(fd.entries());
 
-// Показ с плавным проявлением
-            const analysisSection = document.getElementById('analysis-section');
-            analysisSection.style.display = 'block';
+            // show spinner
+            analyzeBtn.disabled    = true;
+            analyzeBtn.textContent = 'Analyzing…';
 
-            setTimeout(() => {
-                analysisSection.style.opacity = '1';
-            }, 50);
+            try {
+                const res  = await fetch('/analyze', {
+                    method:  'POST',
+                    headers: { 'Content-Type':'application/json' },
+                    body:    JSON.stringify(data)
+                });
+                const json = await res.json();
 
-// Автоскролл к блоку
-            analysisSection.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        } catch (err) {
-            document.getElementById('formatted-result').innerHTML = "<p class='error'>❌ Error analyzing the business.</p>";
-        } finally {
-            analyzeBtn.disabled = false;
-            analyzeBtn.innerHTML = `Analyze 🚀`;
-        }
-    };
+                // parse + render
+                const clean  = json.response
+                    .trim()
+                    .replace(/^```(?:json)?\s*|```$/g,'');
+                const parsed = JSON.parse(clean);
+                renderInsightsFromJson(parsed);
+
+                // reveal results
+                const section = document.getElementById('analysis-section');
+                section.style.display = 'block';
+                setTimeout(() => section.style.opacity = '1', 50);
+                section.scrollIntoView({ behavior:'smooth', block:'start' });
+
+            } catch (err) {
+                document.getElementById('formatted-result')
+                    .innerHTML = "<p class='error'>❌ Error analyzing the business.</p>";
+            } finally {
+                analyzeBtn.disabled    = false;
+                analyzeBtn.textContent = 'Analyze 🚀';
+            }
+        });
+    });
+
 
     document.querySelectorAll('.backBtn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -481,6 +567,148 @@
         }, 500);
     });
 
+    /**
+     * Given the parsed JSON report object, return
+     * the same HTML your in-page renderer would produce,
+     * but as an HTML string.
+     */
+    function buildReportHTML(data) {
+        let html = ``;
+        Object.entries(data).forEach(([section, subtopics]) => {
+            html += `<div class="insight-section">
+               <h3>${section}</h3>`;
+
+            if (typeof subtopics === 'string') {
+                html += `<p>${subtopics}</p>`;
+            } else {
+                Object.entries(subtopics).forEach(([sub, text]) => {
+                    html += `<h4>${sub}</h4><p>${text}</p>`;
+                });
+            }
+
+            html += `</div>`;
+        });
+        return html;
+    }
+
+
+    document.getElementById('retrieveBtn').addEventListener('click', async () => {
+        const emailEl    = document.getElementById('retrieveEmail');
+        const passEl     = document.getElementById('retrievePassword');
+        const container  = document.getElementById('retrieveResults');
+
+        // clear out any old results
+        container.innerHTML = '';
+
+        const email    = emailEl.value.trim();
+        const password = passEl.value.trim();
+
+        if (!email || !password) {
+            return alert("Please enter both email & password to retrieve your reports.");
+        }
+
+        // disable while loading
+        const btn = document.getElementById('retrieveBtn');
+        btn.disabled = true;
+        btn.textContent = 'Loading…';
+
+        try {
+            // 1️⃣ fetch from your Go endpoint
+            const res = await fetch('/get_reports', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ email, password })
+            });
+
+            if (!res.ok) {
+                const txt = await res.text();
+                throw new Error(txt || res.statusText);
+            }
+
+            // 2️⃣ pull the reports array out of the JSON
+            const { reports } = await res.json();
+
+            if (!reports.length) {
+                container.textContent = "No reports found for that email/password.";
+                return;
+            }
+
+            // 3️⃣ build a UL of clickable links
+            const ul = document.createElement('ul');
+            ul.className = 'report-list';
+
+            reports.forEach(r => {
+                const li = document.createElement('li');
+                const a  = document.createElement('a');
+                a.href           = '#';
+                a.textContent    = `${r.report_date} (ID: ${r.id})`;
+                a.dataset.report = r.report;
+
+                a.addEventListener('click', async e => {
+                    e.preventDefault();
+
+                    // 1️⃣ parse the JSON from your data-attribute
+                    const raw = a.dataset.report.trim().replace(/^```(?:json)?\s*|```$/g,'');
+                    let parsed;
+                    try {
+                        parsed = JSON.parse(raw);
+                    } catch {
+                        return alert("Couldn't parse that report.");
+                    }
+
+                    // 2️⃣ build the inner HTML
+                    const reportBody = buildReportHTML(parsed);
+
+                    // 3️⃣ open a new window & write a full HTML document
+                    const w = window.open("", "_blank");
+                    w.document.write(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>MiniBA Report</title>
+      <!-- adjust this path if your static folder is served elsewhere -->
+      <link rel="stylesheet" href="/static/style.css">
+      <style>
+        /* ensure full-page background and centering */
+        body {
+          background: url("/assets/img_miniba.png") center/cover no-repeat;
+          margin:0; padding:2rem;
+          font-family: sans-serif;
+        }
+        .card {
+          max-width: 800px; margin: auto;
+          padding: 2rem; border-radius:1rem;
+          background: rgba(255,255,255,0.95);
+        }
+        /* optionally tweak any colors here */
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h2>📊 MiniBA analysis:</h2>
+        ${reportBody}
+      </div>
+    </body>
+    </html>
+  `);
+                    w.document.close();
+                });
+
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+
+            container.appendChild(ul);
+
+        } catch (err) {
+            console.error(err);
+            alert("Error retrieving reports:\n" + err.message);
+        } finally {
+            btn.disabled   = false;
+            btn.textContent = 'Retrieve Reports';
+        }
+    });
 
 
 </script>

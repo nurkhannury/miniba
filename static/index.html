@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Business Analyst</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+<h1>🧠 miniBA - AI Business Analyst </h1>
+
+<div class="card">
+    <button id="startBtn">✨ Begin</button>
+
+    <div id="progressWrapper">
+        <div id="progressContainer" style="display: none;">
+            <div id="progressBar">
+                <div id="progressFill"><span id="progressText">0%</span></div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" id="writeDefaultBtn">📝 Write default</button>
+
+    <form id="bizForm" style="display: none;">
+
+        <!-- Section 1 -->
+        <div class="section">
+            <h3 class="toggle">📋 Business Overview</h3>
+            <div class="content">
+                <label>Business Name:<br>
+                    <input type="text" name="name" data-required="true" maxlength="60">
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Industry/Sector:<br>
+                    <input type="text" name="industry" data-required="true" maxlength="50">
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Business Model:<br>
+                    <input type="text" name="business_model" data-required="true" maxlength="100">
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Location & Market:<br>
+                    <input type="text" name="location" data-required="true" maxlength="100">
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Business Size and Structure:<br>
+                    <input type="text" name="size_structure" maxlength="120">
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Years in Operation:<br>
+                    <input type="text" name="years_operation" maxlength="30">
+                    <div class="error-message"></div>
+                </label><br>
+
+                <button type="button" class="nextBtn">Next →</button>
+            </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="section">
+            <h3 class="toggle">🛍️ Offerings & Market</h3>
+            <div class="content">
+                <label>Products/Services Offered:<br>
+                    <textarea name="products_services" data-required="true" maxlength="500"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Target Audience:<br>
+                    <textarea name="target_audience" data-required="true" maxlength="300"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Unique Selling Proposition (USP):<br>
+                    <textarea name="usp" maxlength="300"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Main Competitors:<br>
+                    <textarea name="competitors" maxlength="300"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <button type="button" class="backBtn">← Back</button>
+                <button type="button" class="nextBtn">Next →</button>
+            </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="section">
+            <h3 class="toggle">📈 Internal & External Insights</h3>
+            <div class="content">
+                <label>Current Challenges:<br>
+                    <textarea name="challenges" data-required="true" maxlength="400"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Recent Performance Metrics:<br>
+                    <textarea name="performance_metrics" maxlength="300"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Growth Objectives:<br>
+                    <textarea name="growth_objectives" data-required="true" maxlength="400"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Marketing and Sales Channels:<br>
+                    <textarea name="marketing_sales" maxlength="400"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <label>Financial Situation:<br>
+                    <textarea name="financial_situation" maxlength="400"></textarea>
+                    <div class="error-message"></div>
+                </label><br>
+
+                <button type="button" class="backBtn">← Back</button>
+            </div>
+        </div>
+
+        <div class="analyze-wrapper">
+            <button type="submit" class="analyzeBtn">Analyze 🚀</button>
+        </div>
+
+        <div class="analyze-wrapper">
+            <button id="recommendBtn">Get MiniBA Recommendations 💡</button>
+        </div>
+
+        <div id="form-error-message" class="form-error-message" style="display: none; color: red; margin-top: 10px;">
+            ⚠️ Please fill out all required fields before continuing.
+        </div>
+
+        <div id="recommendation-result"></div>
+
+
+    </form>
+</div>
+
+<div class="info-box">
+    <h2>ℹ️ What is Mini Business Analyst?</h2>
+    <p>
+        MiniBA is an AI-powered assistant that helps small and medium-sized business owners get fast, practical insights.
+        Just fill out a short form describing your business — and let AI do the analysis!
+    </p>
+    <ul>
+        <li>A full business analysis</li>
+        <li>Actionable recommendations for growth</li>
+        <li>Key industry trends and risks</li>
+    </ul>
+    <p>
+        Use it to brainstorm ideas, improve your strategy, or discover blind spots in your operations — without hiring a full-time consultant.
+    </p>
+</div>
+
+<!--<h2>📊 Raw JSON from GPT:</h2>-->
+<!--<pre id="raw-result"></pre>-->
+
+<div id="analysis-section" style="display: none; opacity: 0; transition: opacity 0.6s ease;">
+    <h2>📊 MiniBA analysis:</h2>
+    <div id="formatted-result"></div>
+
+    <div class="analyze-wrapper">
+        <button id="downloadPdfBtn" class="analyzeBtn" style="margin-top: 20px;">📄 Download PDF</button>
+    </div>
+</div>
+
+<footer class="mini-footer">
+    <p>✨ Built with Go · <a href="https://github.com/your-repo" target="_blank">GitHub</a> · <a href="#">About MiniBA</a></p>
+</footer>
+
+<script>
+    const form = document.getElementById('bizForm');
+    const startBtn = document.getElementById('startBtn');
+    const progressBar = document.getElementById('progressFill');
+    const progressContainer = document.getElementById('progressContainer');
+    const sections = document.querySelectorAll('.section');
+    const totalSteps = sections.length;
+    let current = 0;
+
+    function updateProgressBar(step) {
+        const percent = Math.round((step / totalSteps) * 100);
+        progressBar.style.width = `${percent}%`;
+        document.getElementById('progressText').textContent = `${percent}%`;
+    }
+
+    function showSection(index) {
+        sections.forEach((section, i) => {
+            section.classList.remove('open');
+            if (i === index) {
+                section.classList.add('open');
+                updateProgressBar(i);
+            }
+        });
+    }
+
+    function validateSection(section) {
+        let isValid = true;
+        const requiredFields = section.querySelectorAll('[data-required="true"]');
+
+        requiredFields.forEach(field => {
+            const message = field.nextElementSibling;
+            if (!field.value.trim()) {
+                field.classList.add('invalid');
+                message.textContent = "* This field is necessary";
+                message.style.display = 'block';
+                isValid = false;
+            } else {
+                field.classList.remove('invalid');
+                message.textContent = "";
+                message.style.display = 'none';
+            }
+        });
+
+        return isValid;
+    }
+
+    function validateRequiredFields() {
+        let isValid = true;
+        const requiredFields = form.querySelectorAll('[data-required="true"]');
+
+        requiredFields.forEach(field => {
+            const message = field.nextElementSibling;
+            if (!field.value.trim()) {
+                field.classList.add('invalid');
+                message.textContent = "* This field is necessary";
+                message.style.display = 'block';
+                isValid = false;
+            } else {
+                field.classList.remove('invalid');
+                message.textContent = "";
+                message.style.display = 'none';
+            }
+        });
+
+        return isValid;
+    }
+
+
+    function renderInsightsFromJson(data) {
+        const container = document.getElementById('formatted-result');
+        container.innerHTML = '';
+
+        Object.entries(data).forEach(([section, subtopics]) => {
+            const sectionBlock = document.createElement('div');
+            sectionBlock.className = 'insight-section';
+
+            const heading = document.createElement('h3');
+            heading.textContent = section;
+            sectionBlock.appendChild(heading);
+
+            if (typeof subtopics === 'string') {
+                // Handle simple string values like "Summary"
+                const paragraph = document.createElement('p');
+                paragraph.textContent = subtopics;
+                sectionBlock.appendChild(paragraph);
+            } else if (typeof subtopics === 'object') {
+                // Handle nested objects like in "Analysis", "Opportunities", etc.
+                Object.entries(subtopics).forEach(([subheading, text]) => {
+                    const subTitle = document.createElement('h4');
+                    subTitle.textContent = subheading;
+                    sectionBlock.appendChild(subTitle);
+
+                    const paragraph = document.createElement('p');
+                    paragraph.textContent = text;
+                    sectionBlock.appendChild(paragraph);
+                });
+            }
+
+            container.appendChild(sectionBlock);
+        });
+    }
+
+    function renderRecommendations(data) {
+        const container = document.getElementById('recommendation-result');
+        container.innerHTML = '<h3 style="margin-bottom: 20px;">✅ MiniBA Recommendations</h3>';
+
+        const list = document.createElement('ol');
+        list.style.paddingLeft = '20px';
+
+        data.forEach(item => {
+            const li = document.createElement('li');
+            li.style.marginBottom = '24px'; // 👉 добавим отступ между пунктами
+
+            const title = document.createElement('strong');
+            title.textContent = item.Title + ": ";
+
+            const explanation = document.createElement('span');
+            explanation.textContent = item.Explanation;
+
+            const impact = document.createElement('div');
+            impact.innerHTML = `<span style="font-style: italic; color: #666;">💡 Impact:</span> ${item.Impact}`;
+            impact.style.marginTop = '6px';
+
+            li.appendChild(title);
+            li.appendChild(explanation);
+            li.appendChild(impact);
+            list.appendChild(li);
+        });
+
+        container.appendChild(list);
+    }
+
+
+
+
+    startBtn.onclick = () => {
+        startBtn.style.display = 'none';
+        form.style.display = 'block';
+        progressContainer.style.display = 'block';
+        showSection(0);
+    };
+
+    document.querySelectorAll('.nextBtn').forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+            const currentSection = sections[current];
+            if (validateSection(currentSection)) {
+                current++;
+                showSection(current);
+            }
+        });
+    });
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+
+        if (!validateRequiredFields()) {
+            showGlobalFormError();
+            return;
+        }
+
+        updateProgressBar(totalSteps);
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        const analyzeBtn = document.querySelector('.analyzeBtn');
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = `<span class="loading-spinner"></span>Analyzing...`;
+
+        try {
+            const res = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const json = await res.json();
+
+            // const rawBlock = document.getElementById('raw-result');
+            // if (rawBlock) rawBlock.textContent = json.response;
+
+            const cleanResponse = json.response.trim().replace(/^```(?:json)?\s*|```$/g, '');
+            const parsed = JSON.parse(cleanResponse);
+            renderInsightsFromJson(parsed);
+
+// Показ с плавным проявлением
+            const analysisSection = document.getElementById('analysis-section');
+            analysisSection.style.display = 'block';
+
+            setTimeout(() => {
+                analysisSection.style.opacity = '1';
+            }, 50);
+
+// Автоскролл к блоку
+            analysisSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        } catch (err) {
+            document.getElementById('formatted-result').innerHTML = "<p class='error'>❌ Error analyzing the business.</p>";
+        } finally {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = `Analyze 🚀`;
+        }
+    };
+
+    document.querySelectorAll('.backBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (current > 0) {
+                current--;
+                showSection(current);
+            }
+        });
+    });
+
+    document.getElementById("writeDefaultBtn").addEventListener("click", function () {
+        const form = document.forms["bizForm"];
+
+        form["name"].value = "NN-OIL";
+        form["industry"].value = "Car Oil Change point, autoservice";
+        form["business_model"].value = "We do oil changes and earn on the oil we sold. Oil may cost 20,000 but we replace for 30,000 KZT";
+        form["location"].value = "Atyrau, Kazakhstan. residential area near to industrial areas";
+        form["size_structure"].value = "300 sq. m building place where two cars can be oil changed simultaneously + there are 2 car lifts for repairment works";
+        form["years_operation"].value = "10 but we rebrand 5 month ago";
+        form["products_services"].value = "Car oil change\nCar repairment works\nTyre service\naccessories for cars sold";
+        form["target_audience"].value = "Drivers of any ages.";
+        form["usp"].value = "No USP actually, just the location near to people's homes. They can visit us after work and do their job.";
+        form["competitors"].value = "There are many in the city, because there are a lot of autoservices.";
+        form["challenges"].value = "We stuck at the sale rate of 2,500,000 KZT per month, out of which the profit is 200,000 - 300,000 maximum after salaries.";
+        form["performance_metrics"].value = "Monthly revenue from 1,500,000 to 2,500,000. February was weak, March is a bit better.";
+        form["growth_objectives"].value = "We want to have at least 5,000,000 per month Revenue. I think it is not hard, because it is 167,000 KZT daily. considering one oil change is 30,000 KZT - it is only 5 cars roughly per DAY.";
+        form["marketing_sales"].value = "None. We are in maps but we do not buy advertisement. We have a car with our logo on it though";
+        form["financial_situation"].value = "The owner of this business is in power to add some investment if he is sure it will be profitable.";
+    });
+
+    document.getElementById('recommendBtn').addEventListener('click', async () => {
+        const recommendBtn = document.getElementById('recommendBtn');
+        recommendBtn.disabled = true;
+        recommendBtn.innerHTML = `Loading recommendations...`;
+
+        if (!validateRequiredFields()) {
+            showGlobalFormError();
+            recommendBtn.disabled = false;
+            recommendBtn.innerHTML = `💡 Get GPT Recommendations`;
+            return;
+        }
+
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch('/recommend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const json = await res.json();
+            const raw = json.response;
+
+            // Покажем raw (в <pre>)
+            document.getElementById('raw-result').textContent = raw;
+
+            // 1. Удаляем ```json ... ```
+            const cleaned = raw.trim().replace(/^```json/, '').replace(/```$/, '');
+
+            // 2. Пробуем распарсить
+            const parsed = JSON.parse(cleaned);
+
+            // 3. Отображаем красиво
+            renderRecommendations(parsed);
+
+        } catch (err) {
+            console.error("❌ Error parsing recommendations:", err);
+            document.getElementById('recommendation-result').innerHTML = "❌ Failed to fetch or parse recommendations.";
+        } finally {
+            recommendBtn.disabled = false;
+            recommendBtn.innerHTML = `💡 Get MiniBA Recommendations 💡`;
+        }
+    });
+
+    function showGlobalFormError() {
+        const errorBlock = document.getElementById('form-error-message');
+        errorBlock.style.display = 'block';
+        setTimeout(() => {
+            errorBlock.style.display = 'none';
+        }, 4000); // исчезнет через 4 секунды
+    }
+
+    document.getElementById("downloadPdfBtn").addEventListener("click", () => {
+        const printContents = document.getElementById("analysis-section").innerHTML;
+        const printWindow = window.open('', '', 'height=800,width=800');
+        printWindow.document.write('<html><head><title>MiniBA Report</title>');
+        printWindow.document.write('<link rel="stylesheet" href="style.css">');
+        printWindow.document.write('</head><body >');
+        printWindow.document.write(printContents);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
+    });
+
+
+
+</script>
+
+</body>
+</html>

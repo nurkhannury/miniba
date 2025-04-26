@@ -73,18 +73,20 @@ Then open your browser to `http://localhost:8080`.
 ## 📷 Screenshots
 
 1. **Form entry**  
-   ![Form screenshot](static/img/form.png)
+   ![image](https://github.com/user-attachments/assets/d1e23ce6-ae54-4435-8499-5fce83c845bf)
 
 2. **Analysis result**  
-   ![Analysis screenshot](static/img/analysis.png)
+   ![image](https://github.com/user-attachments/assets/88f25ada-8ad7-4228-8b71-287024616f54)
 
 3. **History retrieval**  
-   ![Retrieve screenshot](static/img/retrieve.png)
+   ![image](https://github.com/user-attachments/assets/d998c66a-14ef-42e4-bb25-6c0d258e3ef9)
+
 
 ---
 
 ## 🔮 Future Improvements
 
+- Imporve analysis logic and comprehensiveness
 - User authentication & encrypted passwords
 - Deployable Docker image + CI/CD pipeline
 - Additional export formats (Word, PowerPoint)

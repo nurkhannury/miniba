@@ -73,13 +73,14 @@ Then open your browser to `http://localhost:8080`.
 ## 📷 Screenshots
 
 1. **Form entry**  
-   ![image](https://github.com/user-attachments/assets/d1e23ce6-ae54-4435-8499-5fce83c845bf)
+   ![image](https://github.com/user-attachments/assets/d3cf08d1-b3bc-4f7c-8dc6-0317eca75380)
 
 2. **Analysis result**  
-   ![image](https://github.com/user-attachments/assets/88f25ada-8ad7-4228-8b71-287024616f54)
+   ![image](https://github.com/user-attachments/assets/028acc68-8e0c-449b-b231-2a636ff495e3)
 
 3. **History retrieval**  
-   ![image](https://github.com/user-attachments/assets/d998c66a-14ef-42e4-bb25-6c0d258e3ef9)
+   ![image](https://github.com/user-attachments/assets/6e083bba-7673-4c43-9148-18a150a6abbb)
+
 
 
 ---

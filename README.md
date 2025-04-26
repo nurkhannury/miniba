@@ -2,7 +2,7 @@
 
 ![miniBA Logo](assets/favicon-32x32.png)  
 
-A lightweight web app that helps small and medium‑sized business owners get fast, practical insights — powered by OpenAI’s GPT models.
+A lightweight web app that helps small and medium‑sized business owners get fast, practical insights — powered by OpenAI’s GPT models. At this point gpt3.5 is used since it is very cheap. The model can be changed to some powerful & expensive models once formal paywall will be added
 
 ---
 
@@ -10,7 +10,7 @@ A lightweight web app that helps small and medium‑sized business owners get fa
 
 > _(optional)_
 
-Try it out: [https://miniba.yourdomain.com](https://miniba.yourdomain.com)
+Try it out: https://miniba-zxg9.onrender.com/
 
 ---
 
